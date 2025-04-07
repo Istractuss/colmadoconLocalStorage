@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventario del Colmado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, button {
+      margin: 5px;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Inventario del Colmado</h1>
+
+  <form id="formArticulo">
+    <input type="text" id="nombre" placeholder="Nombre del artículo" required>
+    <input type="number" id="cantidad" placeholder="Cantidad" required>
+    <input type="number" step="0.01" id="precio" placeholder="Precio" required>
+    <button type="submit">Agregar artículo</button>
+  </form>
+
+  <h2>Lista de Artículos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Cantidad</th>
+        <th>Precio</th>
+      </tr>
+    </thead>
+    <tbody id="tablaArticulos">
+      <!-- Aquí se mostrarán los artículos -->
+    </tbody>
+  </table>
+
+  <script>
+    // Cargar artículos guardados al iniciar
+    document.addEventListener('DOMContentLoaded', mostrarArticulos);
+
+    // Manejar envío del formulario
+    document.getElementById('formArticulo').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById('nombre').value.trim();
+      const cantidad = parseInt(document.getElementById('cantidad').value);
+      const precio = parseFloat(document.getElementById('precio').value);
+
+      if (!nombre || isNaN(cantidad) || isNaN(precio)) {
+        alert('Por favor, completa todos los campos correctamente.');
+        return;
+      }
+
+      const articulo = { nombre, cantidad, precio };
+      let inventario = JSON.parse(localStorage.getItem('inventario')) || [];
+
+      inventario.push(articulo);
+      localStorage.setItem('inventario', JSON.stringify(inventario));
+
+      mostrarArticulos();
+      this.reset();
+    });
+
+    function mostrarArticulos() {
+      const tabla = document.getElementById('tablaArticulos');
+      tabla.innerHTML = '';
+
+      const inventario = JSON.parse(localStorage.getItem('inventario')) || [];
+
+      inventario.forEach(art => {
+        const fila = `
+          <tr>
+            <td>${art.nombre}</td>
+            <td>${art.cantidad}</td>
+            <td>$${art.precio.toFixed(2)}</td>
+          </tr>
+        `;
+        tabla.innerHTML += fila;
+      });
+    }
+  </script>
+
+</body>
+</html>
